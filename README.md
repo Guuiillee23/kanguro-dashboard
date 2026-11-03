@@ -34,6 +34,9 @@ Fechas como número de días desde `D0.desde` (`'2026-06-01'` = 0). Importes en 
 | `a` | Meta por día, anuncio y país: `[día, índice ads, país, inversión, leads form, leads landing]` |
 | `gc` | Nombres de campañas de Google Ads |
 | `g` | Google Ads por día, campaña y país: `[día, índice gc, país, inversión, conversiones, impresiones, clics]` |
+| `w` | Leads del CRM (Metabase, base `paidleads`) agrupados: `[día lead, día firma o null, país, fuente, nº leads]`. `día firma` = primer paso a WON (solo deals que siguen en WON); `null` = no ha firmado. `fuente`: `'f'` Meta lead form, `'l'` Meta lead landing, `'m'` Meta sin clasificar, `'g'` Google, `'o'` otros. Opcional: sin `w` no se muestran firmados ni CAC |
+
+Reglas de firmados y CAC: para un periodo A–B, firmados = leads con día lead **y** día firma entre A y B. CAC = inversión ÷ firmados (blended, Meta, lead form, lead landing y Google). Los `'m'` cuentan en el CAC Meta y blended, no en form ni landing; los `'o'` no cuentan (su inversión no está en `D0`). Antes del primer día de `w` el CAC sale «—».
 
 Reglas de leads (Meta): los conjuntos «Lead Landing» cuentan solo **contactos**; los «Lead Ads» / «Formulario Meta» solo **clientes potenciales**. Atribución 7 días clic + 1 día visualización.
 

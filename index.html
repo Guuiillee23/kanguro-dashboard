@@ -52,6 +52,7 @@ html,body{margin:0;background:var(--bg);color:var(--fg);-webkit-text-size-adjust
 .strip .lab i{width:8px;height:8px;border-radius:2px}
 .strip .val{font-family:var(--serif);font-size:clamp(24px,2.8vw,34px);line-height:1.1;margin:6px 0;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .strip.big .val{font-size:clamp(30px,3.6vw,44px)}
+.strip .conv{font-size:var(--cap);color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums}
 @media (max-width:760px){.strip{grid-template-columns:repeat(2,1fr)}.strip>div{border-bottom:1px solid var(--line)}.strip>div:nth-child(2n){border-right:0}}
 .chip{display:inline-flex;align-items:center;font-size:var(--cap);font-variant-numeric:tabular-nums;padding:2px 8px;border-radius:999px;white-space:nowrap;background:color-mix(in srgb,var(--muted) 12%,transparent);color:var(--muted)}
 .chip.up{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
@@ -187,10 +188,12 @@ const DATOS_URL = '';
   <!-- BLENDED -->
   <section class="card" id="blended">
     <div class="head"><div><h2>Blended · Meta + Google</h2><p class="note" id="bl-nota">Toda la inversión y todos los leads de las dos plataformas.</p></div></div>
-    <div class="strip big" style="--n:3">
+    <div class="strip big" style="--n:5">
       <div><div class="lab">Inversión total</div><div class="val" data-v="bl_g">—</div><span class="chip" data-d="bl_g"></span></div>
       <div><div class="lab">Leads totales</div><div class="val" data-v="bl_l">—</div><span class="chip" data-d="bl_l"></span></div>
       <div><div class="lab">CPL blended</div><div class="val" data-v="bl_cpl">—</div><span class="chip" data-d="bl_cpl"></span></div>
+      <div data-w><div class="lab">Firmados</div><div class="val" data-v="bl_w">—</div><span class="chip" data-d="bl_w"></span><div class="conv" id="bl-conv"></div></div>
+      <div data-w><div class="lab">CAC blended</div><div class="val" data-v="bl_cac">—</div><span class="chip" data-d="bl_cac"></span></div>
     </div>
     <div class="paises" id="paises"></div>
     <div class="head" style="margin:22px 0 0"><div class="leg" id="leg"></div></div>
@@ -206,6 +209,12 @@ const DATOS_URL = '';
       <div><div class="lab"><i style="background:var(--c-form)"></i>CPL lead form</div><div class="val" data-v="f_cpl">—</div><span class="chip" data-d="f_cpl"></span></div>
       <div><div class="lab"><i style="background:var(--c-land)"></i>Leads landing</div><div class="val" data-v="l_l">—</div><span class="chip" data-d="l_l"></span></div>
       <div><div class="lab"><i style="background:var(--c-land)"></i>CPL lead landing</div><div class="val" data-v="l_cpl">—</div><span class="chip" data-d="l_cpl"></span></div>
+    </div>
+    <div class="strip" style="--n:4;margin-top:12px" data-w>
+      <div><div class="lab">Firmados Meta</div><div class="val" data-v="m_w">—</div><span class="chip" data-d="m_w"></span></div>
+      <div><div class="lab">CAC Meta</div><div class="val" data-v="m_cac">—</div><span class="chip" data-d="m_cac"></span></div>
+      <div><div class="lab"><i style="background:var(--c-form)"></i>CAC lead form</div><div class="val" data-v="f_cac">—</div><span class="chip" data-d="f_cac"></span></div>
+      <div><div class="lab"><i style="background:var(--c-land)"></i>CAC lead landing</div><div class="val" data-v="l_cac">—</div><span class="chip" data-d="l_cac"></span></div>
     </div>
     <div class="head" style="margin:26px 0 0"><div><h2 style="font-size:var(--body)">Por conjunto de anuncios</h2><p class="note">Solo conjuntos con inversión o leads en el periodo. Pulsa una columna para ordenar.</p></div>
       <div class="tools"><input type="search" id="buscar" placeholder="Buscar conjunto, campaña o ID…" aria-label="Buscar conjunto"></div></div>
@@ -225,10 +234,12 @@ const DATOS_URL = '';
   <!-- GOOGLE -->
   <section class="card" id="google" style="--pc:var(--c-google)">
     <div class="head"><div><h2><i>G</i>Google Ads</h2><p class="note">Leads = conversiones de Google Ads. País según el nombre de la campaña (ES, PT, FR, DE).</p></div></div>
-    <div class="strip" style="--n:3">
+    <div class="strip" style="--n:5">
       <div><div class="lab">Inversión</div><div class="val" data-v="g_g">—</div><span class="chip" data-d="g_g"></span></div>
       <div><div class="lab"><i style="background:var(--c-google)"></i>Leads</div><div class="val" data-v="g_l">—</div><span class="chip" data-d="g_l"></span></div>
       <div><div class="lab"><i style="background:var(--c-google)"></i>CPL</div><div class="val" data-v="g_cpl">—</div><span class="chip" data-d="g_cpl"></span></div>
+      <div data-w><div class="lab">Firmados</div><div class="val" data-v="g_w">—</div><span class="chip" data-d="g_w"></span></div>
+      <div data-w><div class="lab">CAC</div><div class="val" data-v="g_cac">—</div><span class="chip" data-d="g_cac"></span></div>
     </div>
     <div class="head" style="margin:26px 0 0"><div><h2 style="font-size:var(--body)">Por campaña</h2></div></div>
     <div class="tw"><table id="t-gads"><thead><tr>
@@ -244,6 +255,7 @@ const DATOS_URL = '';
       <div><b>Google Ads</b>Conversiones de la cuenta de Google Ads. País según la ubicación del usuario; si no la hay, según el nombre de la campaña.</div>
       <div><b>Blended</b>Inversión de Meta + Google ÷ todos los leads (form + landing + Google). Las variaciones comparan con el periodo anterior de la misma duración.</div>
       <div><b>Mejores creatividades</b>Anuncios con menor CPL del periodo, con un mínimo de leads para que el dato sea fiable. Atribución de Meta: 7 días clic + 1 día visualización.</div>
+      <div data-w><b>Firmados y CAC</b>Firmados = leads del CRM que entraron en el periodo y pasaron a WON también dentro del periodo; los que firman después no cuentan, por eso en periodos cortos el CAC sale más alto. CAC = inversión ÷ firmados. Los firmados de Meta sin campaña identificable cuentan en el CAC Meta y blended, no en form ni landing. Conversión = firmados ÷ leads del CRM del periodo. Sin dato antes del primer día con datos del CRM.</div>
     </div>
   </section>
 </div>
@@ -263,6 +275,9 @@ const dia = (n) => iso(new Date(t0 + n * 864e5));
 const M = D0.m.map((r) => ({ d: dia(r[0]), c: r[1], p: r[2], g: r[3], f: r[4], l: r[5] }));
 const A = D0.a.map((r) => ({ d: dia(r[0]), a: r[1], p: r[2], g: r[3], f: r[4], l: r[5] }));
 const G = D0.g.map((r) => ({ d: dia(r[0]), c: r[1], p: r[2], g: r[3], l: r[4], i: r[5], k: r[6] }));
+// CRM (paidleads): leads por día de entrada y día de firma (WON, null si no ha firmado)
+const W = (D0.w || []).map((r) => ({ d: dia(r[0]), s: r[1] == null ? null : dia(r[1]), p: r[2], f: r[3], n: r[4] }));
+const W_DESDE = W.reduce((m, r) => (r.d < m ? r.d : m), '9999');
 const CONJ = D0.conj, ADS = D0.ads, GC = D0.gc;
 const PAISES = D0.paises || ['ES', 'PT', 'FR'];
 const NOMBRE = { ES: 'España', PT: 'Portugal', FR: 'Francia', DE: 'Alemania', IT: 'Italia', GB: 'Reino Unido', OT: 'Otros' };
@@ -306,10 +321,19 @@ function resumen(a, b, p) {
   M.forEach((r) => { if (!enRango(r, a, b) || !enPais(r, p)) return; o.mg += r.g; o.fl += r.f; o.ll += r.l; if (CONJ[r.c][2] === 'l') o.lg += r.g; else o.fg += r.g; });
   G.forEach((r) => { if (!enRango(r, a, b) || !enPais(r, p)) return; o.gg += r.g; o.gl += r.l; });
   o.bg = o.mg + o.gg; o.bl = o.fl + o.ll + o.gl;
+  // Firmados: lead y firma dentro de [a, b]. Fuentes sin inversión en D0 ('o') no cuentan.
+  o.wl = 0; o.w = { f: 0, l: 0, m: 0, g: 0 }; o.ok = W.length > 0 && a >= W_DESDE;
+  W.forEach((r) => { if (!enRango(r, a, b) || !enPais(r, p)) return; o.wl += r.n; if (r.s && r.s >= a && r.s <= b && r.f in o.w) o.w[r.f] += r.n; });
+  o.wm = o.w.f + o.w.l + o.w.m; o.wt = o.wm + o.w.g;
   return o;
 }
-const metricas = (o) => ({ bl_g: o.bg, bl_l: o.bl, bl_cpl: div(o.bg, o.bl), m_g: o.mg, f_l: o.fl, f_cpl: div(o.fg, o.fl), l_l: o.ll, l_cpl: div(o.lg, o.ll), g_g: o.gg, g_l: o.gl, g_cpl: div(o.gg, o.gl) });
-const esCoste = (k) => /cpl/.test(k), esGasto = (k) => /_g$/.test(k);
+function metricas(o) {
+  const wn = (n) => (o.ok ? n : null), cac = (g, n) => (o.ok ? div(g, n) : null);
+  return { bl_g: o.bg, bl_l: o.bl, bl_cpl: div(o.bg, o.bl), m_g: o.mg, f_l: o.fl, f_cpl: div(o.fg, o.fl), l_l: o.ll, l_cpl: div(o.lg, o.ll), g_g: o.gg, g_l: o.gl, g_cpl: div(o.gg, o.gl),
+    bl_w: wn(o.wt), bl_cac: cac(o.bg, o.wt), m_w: wn(o.wm), m_cac: cac(o.mg, o.wm), f_cac: cac(o.fg, o.w.f), l_cac: cac(o.lg, o.w.l), g_w: wn(o.w.g), g_cac: cac(o.gg, o.w.g) };
+}
+const esCoste = (k) => /cpl|cac/.test(k), esGasto = (k) => /_g$/.test(k);
+const fPct = (v) => (v == null ? '—' : fmt(v * 100, 1) + ' %');
 
 // ---------- controles ----------
 const per = document.getElementById('per'), inI = document.getElementById('ini'), inF = document.getElementById('fin');
@@ -334,8 +358,10 @@ function pintar() {
   document.getElementById('rango').textContent = `${fDY(S.ini)}  →  ${fDY(S.fin)}` + (S.pais === 'all' ? ' · Todos los países' : ' · ' + NOMBRE[S.pais]);
   const len = Math.round((new Date(S.fin) - new Date(S.ini)) / 864e5) + 1, pa = addD(S.ini, -len), pb = addD(S.ini, -1);
   const prevOk = pa >= D0.desde;
-  const C = metricas(resumen(S.ini, S.fin, S.pais)), P = metricas(resumen(pa, pb, S.pais));
-  document.querySelectorAll('[data-v]').forEach((e) => { const k = e.dataset.v, v = C[k]; e.textContent = esCoste(k) ? fE(v) : esGasto(k) ? eur.format(v) : fN(v); });
+  const R = resumen(S.ini, S.fin, S.pais), C = metricas(R), P = metricas(resumen(pa, pb, S.pais));
+  document.querySelectorAll('[data-v]').forEach((e) => { const k = e.dataset.v, v = C[k]; e.textContent = esCoste(k) ? fE(v) : esGasto(k) ? eur.format(v) : v == null ? '—' : fN(v); });
+  const conv = document.getElementById('bl-conv');
+  if (conv) conv.textContent = R.ok ? `de ${fN(R.wl)} leads CRM · ${fPct(div(R.wt, R.wl))}` : `Sin datos del CRM antes del ${fDY(W_DESDE)}`;
   document.querySelectorAll('[data-d]').forEach((e) => {
     const k = e.dataset.d, a = C[k], b = P[k]; e.className = 'chip'; e.textContent = ''; e.title = '';
     if (!prevOk || a == null || b == null || !b) return;
@@ -357,8 +383,10 @@ function paises() {
     const b = el('button', 'pc'); b.type = 'button'; b.setAttribute('aria-pressed', String(S.pais === p));
     b.addEventListener('click', () => setPais(S.pais === p ? 'all' : p));
     const t = el('div', 't'); t.append(el('div', null, NOMBRE[p]), el('span', null, COD[p])); b.append(t);
-    const n = el('div', 'n');
-    [['Inversión', eur.format(o.bg)], ['Leads', fN(o.bl)], ['CPL', fE(div(o.bg, o.bl))]].forEach(([l, v]) => { const d = el('div'); d.append(el('small', null, l), el('b', null, v)); n.append(d); });
+    const n = el('div', 'n'), mt = metricas(o);
+    const items = [['Inversión', eur.format(o.bg)], ['Leads', fN(o.bl)], ['CPL', fE(div(o.bg, o.bl))]];
+    if (W.length) items.push(['Firmados', mt.bl_w == null ? '—' : fN(mt.bl_w)], ['CAC', fE(mt.bl_cac)], ['Conversión', fPct(o.ok ? div(o.wt, o.wl) : null)]);
+    items.forEach(([l, v]) => { const d = el('div'); d.append(el('small', null, l), el('b', null, v)); n.append(d); });
     b.append(n);
     const mix = el('div', 'mix');
     [[o.fl, 'var(--c-form)'], [o.ll, 'var(--c-land)'], [o.gl, 'var(--c-google)']].forEach(([v, c]) => { if (v > 0) { const s = el('span'); s.style.width = `${100 * v / o.bl}%`; s.style.background = c; mix.append(s); } });
@@ -509,6 +537,8 @@ const fT = (s) => (s ? new Date(s).toLocaleString('es-ES', { timeZone: 'Europe/M
 document.getElementById('act').textContent = 'Maktiva · Kanguro · Actualizado ' + fT(D0.actualizado);
 document.getElementById('foot').textContent = 'Datos: Meta Ads (API, por país) y Google Ads (por ubicación del usuario). Se actualiza cada hora.';
 if ((D0.avisos || []).length) { const b = el('div', 'card avisos'); b.append(el('b', null, 'Datos incompletos')); D0.avisos.forEach((t) => b.append(el('div', null, t))); document.getElementById('avisos').append(b); }
+// Sin datos del CRM (D0.w) se quitan los bloques de firmados y CAC
+if (!W.length) { document.querySelectorAll('[data-w]').forEach((e) => e.remove()); document.querySelectorAll('.strip').forEach((s) => s.style.setProperty('--n', s.children.length)); }
 let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(grafica, 150); });
 pintar();
 }
