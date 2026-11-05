@@ -48,6 +48,7 @@ html,body{margin:0;background:var(--bg);color:var(--fg);-webkit-text-size-adjust
 .strip{display:grid;grid-template-columns:repeat(var(--n),1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .strip>div{padding:16px 18px;border-right:1px solid var(--line)}
 .strip>div:last-child{border-right:0}
+[hidden]{display:none!important}
 .strip .lab{font-size:var(--cap);color:var(--muted);display:flex;align-items:center;gap:6px}
 .strip .lab i{width:8px;height:8px;border-radius:2px}
 .strip .val{font-family:var(--serif);font-size:clamp(24px,2.8vw,34px);line-height:1.1;margin:6px 0;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
@@ -202,32 +203,32 @@ const DATOS_URL = '';
 
   <!-- META -->
   <section class="card" id="meta" style="--pc:var(--c-meta)">
-    <div class="head"><div><h2><i>M</i>Meta Ads</h2><p class="note">Conjuntos «Lead Ads / Formulario Meta» → clientes potenciales (lead form). Conjuntos «Lead Landing» → contactos (lead landing). Cada CPL usa solo la inversión de sus conjuntos.</p></div></div>
+    <div class="head"><div><h2><i>M</i>Meta Ads</h2><p class="note" id="m-nota">Conjuntos «Lead Ads / Formulario Meta» → clientes potenciales (lead form). Conjuntos «Lead Landing» → contactos (lead landing). Cada CPL usa solo la inversión de sus conjuntos.</p></div></div>
     <div class="strip" style="--n:5">
       <div><div class="lab">Inversión</div><div class="val" data-v="m_g">—</div><span class="chip" data-d="m_g"></span></div>
-      <div><div class="lab"><i style="background:var(--c-form)"></i>Leads form</div><div class="val" data-v="f_l">—</div><span class="chip" data-d="f_l"></span></div>
-      <div><div class="lab"><i style="background:var(--c-form)"></i>CPL lead form</div><div class="val" data-v="f_cpl">—</div><span class="chip" data-d="f_cpl"></span></div>
+      <div data-form><div class="lab"><i style="background:var(--c-form)"></i>Leads form</div><div class="val" data-v="f_l">—</div><span class="chip" data-d="f_l"></span></div>
+      <div data-form><div class="lab"><i style="background:var(--c-form)"></i>CPL lead form</div><div class="val" data-v="f_cpl">—</div><span class="chip" data-d="f_cpl"></span></div>
       <div><div class="lab"><i style="background:var(--c-land)"></i>Leads landing</div><div class="val" data-v="l_l">—</div><span class="chip" data-d="l_l"></span></div>
       <div><div class="lab"><i style="background:var(--c-land)"></i>CPL lead landing</div><div class="val" data-v="l_cpl">—</div><span class="chip" data-d="l_cpl"></span></div>
     </div>
     <div class="strip" style="--n:4;margin-top:12px" data-w>
       <div><div class="lab">Firmados Meta</div><div class="val" data-v="m_w">—</div><span class="chip" data-d="m_w"></span></div>
       <div><div class="lab">CAC Meta</div><div class="val" data-v="m_cac">—</div><span class="chip" data-d="m_cac"></span></div>
-      <div><div class="lab"><i style="background:var(--c-form)"></i>CAC lead form</div><div class="val" data-v="f_cac">—</div><span class="chip" data-d="f_cac"></span></div>
+      <div data-form><div class="lab"><i style="background:var(--c-form)"></i>CAC lead form</div><div class="val" data-v="f_cac">—</div><span class="chip" data-d="f_cac"></span></div>
       <div><div class="lab"><i style="background:var(--c-land)"></i>CAC lead landing</div><div class="val" data-v="l_cac">—</div><span class="chip" data-d="l_cac"></span></div>
     </div>
     <div class="head" style="margin:26px 0 0"><div><h2 style="font-size:var(--body)">Por conjunto de anuncios</h2><p class="note">Solo conjuntos con inversión o leads en el periodo. Pulsa una columna para ordenar.</p></div>
       <div class="tools"><input type="search" id="buscar" placeholder="Buscar conjunto, campaña o ID…" aria-label="Buscar conjunto"></div></div>
     <div class="tw"><table id="t-conj"><thead><tr>
       <th data-s="n">Conjunto</th><th data-s="p">País</th><th data-s="g">Inversión</th>
-      <th class="sep" data-s="fl">Leads form</th><th data-s="fc">CPL form</th>
+      <th class="sep" data-s="fl" data-form>Leads form</th><th data-s="fc" data-form>CPL form</th>
       <th class="sep" data-s="ll">Leads landing</th><th data-s="lc">CPL landing</th>
     </tr></thead><tbody></tbody></table></div>
   </section>
 
   <!-- CREATIVIDADES -->
   <section class="cg" id="creas">
-    <div class="card cgc" style="--cc:var(--c-form)"><div class="head" style="margin-bottom:6px"><div><h2>Mejores creatividades · Lead form</h2><p class="note" data-cn="f"></p></div></div><div data-cl="f"></div></div>
+    <div class="card cgc" style="--cc:var(--c-form)" data-form><div class="head" style="margin-bottom:6px"><div><h2>Mejores creatividades · Lead form</h2><p class="note" data-cn="f"></p></div></div><div data-cl="f"></div></div>
     <div class="card cgc" style="--cc:var(--c-land)"><div class="head" style="margin-bottom:6px"><div><h2>Mejores creatividades · Lead landing</h2><p class="note" data-cn="l"></p></div></div><div data-cl="l"></div></div>
   </section>
 
@@ -250,7 +251,7 @@ const DATOS_URL = '';
   <section class="card">
     <h2 style="font-size:var(--body)">Cómo se calcula</h2>
     <div class="defs">
-      <div><b>Lead form</b>Clientes potenciales de los conjuntos «Lead Ads» o «Formulario Meta». CPL = inversión de esos conjuntos ÷ clientes potenciales.</div>
+      <div data-form><b>Lead form</b>Clientes potenciales de los conjuntos «Lead Ads» o «Formulario Meta». CPL = inversión de esos conjuntos ÷ clientes potenciales.</div>
       <div><b>Lead landing</b>Contactos de los conjuntos «Lead Landing». CPL = inversión de esos conjuntos ÷ contactos. Si un conjunto no lleva ninguno de los dos nombres, cuenta según a qué optimiza.</div>
       <div><b>Google Ads</b>Conversiones de la cuenta de Google Ads. País según la ubicación del usuario; si no la hay, según el nombre de la campaña.</div>
       <div><b>Blended</b>Inversión de Meta + Google ÷ todos los leads (form + landing + Google). Las variaciones comparan con el periodo anterior de la misma duración.</div>
@@ -310,7 +311,7 @@ const preset = (p) => {
   if (p === 'mes') return [`${y}-${String(m).padStart(2, '0')}-01`, HOY];
   if (p === 'mesant') return [iso(new Date(Date.UTC(y, m - 2, 1))), iso(new Date(Date.UTC(y, m - 1, 0)))];
 };
-const S = { p: '7d', ini: null, fin: null, pais: 'all', q: '', oc: { k: 'g', dir: 'desc' }, og: { k: 'g', dir: 'desc' } };
+const S = { form: true, p: '7d', ini: null, fin: null, pais: 'all', q: '', oc: { k: 'g', dir: 'desc' }, og: { k: 'g', dir: 'desc' } };
 [S.ini, S.fin] = preset(S.p);
 
 // ---------- cálculo ----------
@@ -350,6 +351,9 @@ const ordenable = (id, key) => document.querySelectorAll(`#${id} th[data-s]`).fo
 }));
 ordenable('t-conj', 'oc'); ordenable('t-gads', 'og');
 
+// Cada franja de KPIs reparte el ancho entre las casillas visibles
+const ajustarStrips = () => document.querySelectorAll('.strip').forEach((s) => s.style.setProperty('--n', [...s.children].filter((c) => !c.hidden).length || 1));
+
 // ---------- pintar ----------
 function pintar() {
   per.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.p === S.p)));
@@ -359,6 +363,13 @@ function pintar() {
   const len = Math.round((new Date(S.fin) - new Date(S.ini)) / 864e5) + 1, pa = addD(S.ini, -len), pb = addD(S.ini, -1);
   const prevOk = pa >= D0.desde;
   const R = resumen(S.ini, S.fin, S.pais), C = metricas(R), P = metricas(resumen(pa, pb, S.pais));
+  // Lead form ya no se usa: solo aparece si en el periodo (y país) elegido hubo inversión o leads de lead form
+  S.form = R.fg > 0 || R.fl > 0;
+  document.querySelectorAll('[data-form]').forEach((e) => { e.hidden = !S.form; });
+  ajustarStrips();
+  document.getElementById('m-nota').textContent = S.form
+    ? 'Conjuntos «Lead Ads / Formulario Meta» → clientes potenciales (lead form). Conjuntos «Lead Landing» → contactos (lead landing). Cada CPL usa solo la inversión de sus conjuntos.'
+    : 'Conjuntos «Lead Landing» → contactos (lead landing). Lead form no tuvo inversión en este periodo: aparece solo al elegir fechas en las que sí la hubo.';
   document.querySelectorAll('[data-v]').forEach((e) => { const k = e.dataset.v, v = C[k]; e.textContent = esCoste(k) ? fE(v) : esGasto(k) ? eur.format(v) : v == null ? '—' : fN(v); });
   const conv = document.getElementById('bl-conv');
   if (conv) conv.textContent = R.ok ? `de ${fN(R.wl)} leads CRM · ${fPct(div(R.wt, R.wl))}` : `Sin datos del CRM antes del ${fDY(W_DESDE)}`;
@@ -391,7 +402,7 @@ function paises() {
     const mix = el('div', 'mix');
     [[o.fl, 'var(--c-form)'], [o.ll, 'var(--c-land)'], [o.gl, 'var(--c-google)']].forEach(([v, c]) => { if (v > 0) { const s = el('span'); s.style.width = `${100 * v / o.bl}%`; s.style.background = c; mix.append(s); } });
     b.append(mix);
-    const s = el('div', 's'); s.append('Meta ', el('b', null, eur.format(o.mg)), ` · ${fN(o.fl)} form · ${fN(o.ll)} landing`, el('br'), 'Google ', el('b', null, eur.format(o.gg)), ` · ${fN(o.gl)} leads`);
+    const s = el('div', 's'); s.append('Meta ', el('b', null, eur.format(o.mg)), (S.form ? ` · ${fN(o.fl)} form` : '') + ` · ${fN(o.ll)} landing`, el('br'), 'Google ', el('b', null, eur.format(o.gg)), ` · ${fN(o.gl)} leads`);
     b.append(s);
     box.append(b);
   });
@@ -406,7 +417,7 @@ function grafica() {
   M.forEach((r) => { if (!enRango(r, S.ini, S.fin) || !enPais(r, S.pais)) return; const b = B.get(key(r.d)); b.inv += r.g; b.f += r.f; b.l += r.l; });
   G.forEach((r) => { if (!enRango(r, S.ini, S.fin) || !enPais(r, S.pais)) return; const b = B.get(key(r.d)); b.inv += r.g; b.g += r.l; });
   const data = [...B.values()]; data.forEach((b) => { b.t = b.f + b.l + b.g; b.cpl = div(b.inv, b.t); });
-  const SER = [['f', 'Leads form', 'var(--c-form)'], ['l', 'Leads landing', 'var(--c-land)'], ['g', 'Leads Google', 'var(--c-google)']];
+  const SER = [['f', 'Leads form', 'var(--c-form)'], ['l', 'Leads landing', 'var(--c-land)'], ['g', 'Leads Google', 'var(--c-google)']].filter(([k]) => S.form || k !== 'f');
   document.getElementById('leg').replaceChildren(...SER.map(([, n, c]) => { const s = el('span'); const i = el('i'); i.style.background = c; s.append(i, n); return s; }),
     (() => { const s = el('span'); const i = el('i', 'ln'); i.style.background = 'var(--c-cpl)'; s.append(i, 'CPL blended (eje derecho)'); return s; })());
   const W = Math.max(300, chart.clientWidth), H = 260, m = { t: 12, r: 52, b: 26, l: 40 };
@@ -432,7 +443,7 @@ function grafica() {
   svg.append('g').selectAll('rect').data(data).join('rect').attr('x', (b) => x(b.k) - (x.step() - x.bandwidth()) / 2).attr('width', x.step()).attr('y', m.t).attr('height', H - m.t - m.b).attr('fill', 'transparent')
     .on('mousemove', (ev, b) => {
       tip.replaceChildren(el('div', 't', sem ? `Semana del ${fD(b.k)}` : fDY(b.k)));
-      [[css('--c-form'), 'Leads form', fN(b.f)], [css('--c-land'), 'Leads landing', fN(b.l)], [css('--c-google'), 'Leads Google', fN(b.g)], [null, 'Inversión', eur.format(b.inv)], [null, 'CPL blended', fE(b.cpl)]]
+      [...(S.form ? [[css('--c-form'), 'Leads form', fN(b.f)]] : []), [css('--c-land'), 'Leads landing', fN(b.l)], [css('--c-google'), 'Leads Google', fN(b.g)], [null, 'Inversión', eur.format(b.inv)], [null, 'CPL blended', fE(b.cpl)]]
         .forEach(([c, n, v]) => { const r = el('div', 'r'), l = el('span'); if (c) { const sw = el('span', 'sw'); sw.style.background = c; l.append(sw); } l.append(n); r.append(l, el('b', null, v)); tip.append(r); });
       tip.style.display = 'block'; const [px, py] = d3.pointer(ev, chart);
       tip.style.left = `${Math.min(Math.max(0, px + 14), chart.clientWidth - tip.offsetWidth)}px`; tip.style.top = `${Math.max(0, py - 24)}px`;
@@ -469,20 +480,21 @@ function tablaConj() {
   });
   let rows = [...agg.values()].map((o) => ({ ...o, n: corto(o.full, o.ps), p: [...o.ps].sort().join(' '), fl: o.t === 'f' ? o.f : null, fc: o.t === 'f' ? div(o.g, o.f) : null, ll: o.t === 'l' ? o.l : null, lc: o.t === 'l' ? div(o.g, o.l) : null }));
   if (S.q) rows = rows.filter((o) => [o.n, o.full, o.camp, o.ci, o.id].join(' ').toLowerCase().includes(S.q));
+  if (!S.form && /^f[lc]$/.test(S.oc.k)) S.oc = { k: 'g', dir: 'desc' };
   ordenar(rows, S.oc); marcarOrden('t-conj', S.oc);
   const tb = document.querySelector('#t-conj tbody'); tb.replaceChildren();
   const T = { g: 0, fg: 0, fl: 0, lg: 0, ll: 0 };
   rows.forEach((o) => {
     const tr = el('tr'), td = el('td'); td.title = o.full + '\nCampaña: ' + o.camp + (o.id ? '\nID conjunto: ' + o.id : '') + (o.ci ? '\nID campaña: ' + o.ci : ''); td.append(el('span', 'nm', o.n)); const tg = el('span', 'tag', o.t === 'f' ? 'Lead form' : 'Lead landing'); tg.style.setProperty('--tc', o.t === 'f' ? 'var(--c-form)' : 'var(--c-land)'); const sb = el('span', 'sub'); if (o.id) sb.append('ID conjunto ', el('span', 'cid', o.id)); if (o.ci) sb.append(o.id ? ' · ' : '', 'ID campaña ', el('span', 'cid', o.ci)); if (!o.id && !o.ci) sb.append(o.camp); td.append(tg, sb); tr.append(td);
     celda(tr, banderas(o.ps)); celda(tr, fE(o.g));
-    celda(tr, o.fl == null ? '—' : fN(o.fl), 'sep' + (o.fl == null ? ' na' : '')); celda(tr, o.fl == null ? '—' : fE(o.fc), o.fl == null ? 'na' : '');
+    if (S.form) { celda(tr, o.fl == null ? '—' : fN(o.fl), 'sep' + (o.fl == null ? ' na' : '')); celda(tr, o.fl == null ? '—' : fE(o.fc), o.fl == null ? 'na' : ''); }
     celda(tr, o.ll == null ? '—' : fN(o.ll), 'sep' + (o.ll == null ? ' na' : '')); celda(tr, o.ll == null ? '—' : fE(o.lc), o.ll == null ? 'na' : '');
     tb.append(tr);
     T.g += o.g; if (o.t === 'l') { T.lg += o.g; T.ll += o.l; } else { T.fg += o.g; T.fl += o.f; }
   });
-  if (!rows.length) { const tr = el('tr'); const td = celda(tr, 'Sin conjuntos con datos en el periodo.', 'na'); td.colSpan = 7; tb.append(tr); return; }
+  if (!rows.length) { const tr = el('tr'); const td = celda(tr, 'Sin conjuntos con datos en el periodo.', 'na'); td.colSpan = S.form ? 7 : 5; tb.append(tr); return; }
   const tr = el('tr', 'tot'); celda(tr, `Total (${rows.length} conjuntos)`); celda(tr, ''); celda(tr, fE(T.g));
-  celda(tr, fN(T.fl), 'sep'); celda(tr, fE(div(T.fg, T.fl))); celda(tr, fN(T.ll), 'sep'); celda(tr, fE(div(T.lg, T.ll))); tb.append(tr);
+  if (S.form) { celda(tr, fN(T.fl), 'sep'); celda(tr, fE(div(T.fg, T.fl))); } celda(tr, fN(T.ll), 'sep'); celda(tr, fE(div(T.lg, T.ll))); tb.append(tr);
 }
 
 function creas() {
@@ -492,7 +504,7 @@ function creas() {
     let o = agg.get(r.a); if (!o) { const ad = ADS[r.a], c = CONJ[ad[1]]; agg.set(r.a, (o = { n: ad[0], conj: c[0], t: c[2], img: https(ad[2]), link: https(ad[3]), id: ad[4] || '', g: 0, f: 0, l: 0 })); }
     o.g += r.g; o.f += r.f; o.l += r.l;
   });
-  ['f', 'l'].forEach((t) => {
+  ['f', 'l'].filter((t) => S.form || t !== 'f').forEach((t) => {
     const box = document.querySelector(`[data-cl=${t}]`); box.replaceChildren();
     const todos = [...agg.values()].filter((o) => o.t === t && o.g > 0).map((o) => ({ ...o, n_: o[t] }));
     const tg = todos.reduce((s, o) => s + o.g, 0), tl = todos.reduce((s, o) => s + o.n_, 0), media = div(tg, tl);
@@ -538,7 +550,7 @@ document.getElementById('act').textContent = 'Maktiva · Kanguro · Actualizado 
 document.getElementById('foot').textContent = 'Datos: Meta Ads (API, por país) y Google Ads (por ubicación del usuario). Se actualiza cada hora.';
 if ((D0.avisos || []).length) { const b = el('div', 'card avisos'); b.append(el('b', null, 'Datos incompletos')); D0.avisos.forEach((t) => b.append(el('div', null, t))); document.getElementById('avisos').append(b); }
 // Sin datos del CRM (D0.w) se quitan los bloques de firmados y CAC
-if (!W.length) { document.querySelectorAll('[data-w]').forEach((e) => e.remove()); document.querySelectorAll('.strip').forEach((s) => s.style.setProperty('--n', s.children.length)); }
+if (!W.length) { document.querySelectorAll('[data-w]').forEach((e) => e.remove()); ajustarStrips(); }
 let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(grafica, 150); });
 pintar();
 }
