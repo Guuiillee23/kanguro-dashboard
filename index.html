@@ -223,7 +223,9 @@ const DATOS_URL = '';
       <th data-s="n">Conjunto</th><th data-s="p">País</th><th data-s="g">Inversión</th>
       <th class="sep" data-s="fl" data-form>Leads form</th><th data-s="fc" data-form>CPL form</th>
       <th class="sep" data-s="ll">Leads landing</th><th data-s="lc">CPL landing</th>
+      <th class="sep" data-s="w" data-w>Firmados</th><th data-s="wc" data-w>CAC</th>
     </tr></thead><tbody></tbody></table></div>
+    <p class="note" id="t-conj-sin" data-w style="margin-top:8px"></p>
   </section>
 
   <!-- CREATIVIDADES -->
@@ -256,7 +258,7 @@ const DATOS_URL = '';
       <div><b>Google Ads</b>Conversiones de la cuenta de Google Ads. País según la ubicación del usuario; si no la hay, según el nombre de la campaña.</div>
       <div><b>Blended</b>Inversión de Meta + Google ÷ todos los leads (form + landing + Google). Las variaciones comparan con el periodo anterior de la misma duración.</div>
       <div><b>Mejores creatividades</b>Anuncios con menor CPL del periodo, con un mínimo de leads para que el dato sea fiable. Atribución de Meta: 7 días clic + 1 día visualización.</div>
-      <div data-w><b>Firmados y CAC</b>Firmados = leads del CRM que entraron en el periodo y pasaron a WON también dentro del periodo; los que firman después no cuentan, por eso en periodos cortos el CAC sale más alto. CAC = inversión ÷ firmados. Los firmados de Meta sin campaña identificable cuentan en el CAC Meta y blended, no en form ni landing. Conversión = firmados ÷ leads del CRM del periodo. Sin dato antes del primer día con datos del CRM.</div>
+      <div data-w><b>Firmados y CAC</b>Firmados = leads del CRM que entraron en el periodo y pasaron a WON también dentro del periodo; los que firman después no cuentan, por eso en periodos cortos el CAC sale más alto. CAC = inversión ÷ firmados. Los firmados de Meta sin campaña identificable cuentan en el CAC Meta y blended, no en form ni landing. Conversión = firmados ÷ leads del CRM del periodo. Sin dato antes del primer día con datos del CRM. Por conjunto y por creatividad: firmados cruzados por el ID de conjunto y de anuncio que guarda el CRM; los firmados sin ID cuentan en el CAC Meta pero no en ninguna fila.</div>
     </div>
   </section>
 </div>
@@ -277,7 +279,8 @@ const M = D0.m.map((r) => ({ d: dia(r[0]), c: r[1], p: r[2], g: r[3], f: r[4], l
 const A = D0.a.map((r) => ({ d: dia(r[0]), a: r[1], p: r[2], g: r[3], f: r[4], l: r[5] }));
 const G = D0.g.map((r) => ({ d: dia(r[0]), c: r[1], p: r[2], g: r[3], l: r[4], i: r[5], k: r[6] }));
 // CRM (paidleads): leads por día de entrada y día de firma (WON, null si no ha firmado)
-const W = (D0.w || []).map((r) => ({ d: dia(r[0]), s: r[1] == null ? null : dia(r[1]), p: r[2], f: r[3], n: r[4] }));
+const idTxt = (v) => (v == null || v === '' ? null : String(v));
+const W = (D0.w || []).map((r) => ({ d: dia(r[0]), s: r[1] == null ? null : dia(r[1]), p: r[2], f: r[3], n: r[4], ci: idTxt(r[5]), si: idTxt(r[6]), ai: idTxt(r[7]) }));
 const W_DESDE = W.reduce((m, r) => (r.d < m ? r.d : m), '9999');
 const CONJ = D0.conj, ADS = D0.ads, GC = D0.gc;
 const PAISES = D0.paises || ['ES', 'PT', 'FR'];
@@ -317,6 +320,16 @@ const S = { form: true, p: '7d', ini: null, fin: null, pais: 'all', q: '', oc: {
 // ---------- cálculo ----------
 const enRango = (r, a, b) => r.d >= a && r.d <= b;
 const enPais = (r, p) => p === 'all' || r.p === p;
+// Firmados de Meta del periodo por ID ('si' conjunto, 'ai' anuncio). sin = firmados de Meta sin ese ID. null si el periodo empieza antes que el CRM.
+function firmadosPor(campo, a, b, p) {
+  if (!W.length || a < W_DESDE) return null;
+  const m = new Map(); m.sin = 0;
+  W.forEach((r) => {
+    if (!enRango(r, a, b) || !enPais(r, p) || !r.s || r.s < a || r.s > b || 'flm'.indexOf(r.f) === -1) return;
+    if (r[campo]) m.set(r[campo], (m.get(r[campo]) || 0) + r.n); else m.sin += r.n;
+  });
+  return m;
+}
 function resumen(a, b, p) {
   const o = { mg: 0, fg: 0, fl: 0, lg: 0, ll: 0, gg: 0, gl: 0 };
   M.forEach((r) => { if (!enRango(r, a, b) || !enPais(r, p)) return; o.mg += r.g; o.fl += r.f; o.ll += r.l; if (CONJ[r.c][2] === 'l') o.lg += r.g; else o.fg += r.g; });
@@ -478,23 +491,29 @@ function tablaConj() {
     if (!o) agg.set(r.c, (o = { full: c[0], camp: c[1], t: c[2], ci: c[3] || '', id: c[4] || '', ps: new Set(), g: 0, f: 0, l: 0 }));
     o.g += r.g; o.f += r.f; o.l += r.l; o.ps.add(r.p);
   });
-  let rows = [...agg.values()].map((o) => ({ ...o, n: corto(o.full, o.ps), p: [...o.ps].sort().join(' '), fl: o.t === 'f' ? o.f : null, fc: o.t === 'f' ? div(o.g, o.f) : null, ll: o.t === 'l' ? o.l : null, lc: o.t === 'l' ? div(o.g, o.l) : null }));
+  const FW = firmadosPor('si', S.ini, S.fin, S.pais);
+  let rows = [...agg.values()].map((o) => { const w = FW ? FW.get(String(o.id)) || 0 : null; return { ...o, n: corto(o.full, o.ps), p: [...o.ps].sort().join(' '), fl: o.t === 'f' ? o.f : null, fc: o.t === 'f' ? div(o.g, o.f) : null, ll: o.t === 'l' ? o.l : null, lc: o.t === 'l' ? div(o.g, o.l) : null, w, wc: w ? o.g / w : null }; });
+  const sinTxt = document.getElementById('t-conj-sin');
+  if (sinTxt) sinTxt.textContent = !FW ? `Firmados y CAC: sin datos del CRM antes del ${fDY(W_DESDE)}.` : ((n) => (n ? `${fN(n)} firmado${n > 1 ? 's' : ''} de Meta del periodo sin conjunto identificado en esta tabla (no salen en ninguna fila; sí en el CAC Meta).` : ''))(FW.sin + [...FW].reduce((t, [id, n]) => t + ([...agg.values()].some((o) => String(o.id) === id) ? 0 : n), 0));
   if (S.q) rows = rows.filter((o) => [o.n, o.full, o.camp, o.ci, o.id].join(' ').toLowerCase().includes(S.q));
   if (!S.form && /^f[lc]$/.test(S.oc.k)) S.oc = { k: 'g', dir: 'desc' };
   ordenar(rows, S.oc); marcarOrden('t-conj', S.oc);
   const tb = document.querySelector('#t-conj tbody'); tb.replaceChildren();
-  const T = { g: 0, fg: 0, fl: 0, lg: 0, ll: 0 };
+  const T = { g: 0, fg: 0, fl: 0, lg: 0, ll: 0, w: 0 };
   rows.forEach((o) => {
     const tr = el('tr'), td = el('td'); td.title = o.full + '\nCampaña: ' + o.camp + (o.id ? '\nID conjunto: ' + o.id : '') + (o.ci ? '\nID campaña: ' + o.ci : ''); td.append(el('span', 'nm', o.n)); const tg = el('span', 'tag', o.t === 'f' ? 'Lead form' : 'Lead landing'); tg.style.setProperty('--tc', o.t === 'f' ? 'var(--c-form)' : 'var(--c-land)'); const sb = el('span', 'sub'); if (o.id) sb.append('ID conjunto ', el('span', 'cid', o.id)); if (o.ci) sb.append(o.id ? ' · ' : '', 'ID campaña ', el('span', 'cid', o.ci)); if (!o.id && !o.ci) sb.append(o.camp); td.append(tg, sb); tr.append(td);
     celda(tr, banderas(o.ps)); celda(tr, fE(o.g));
     if (S.form) { celda(tr, o.fl == null ? '—' : fN(o.fl), 'sep' + (o.fl == null ? ' na' : '')); celda(tr, o.fl == null ? '—' : fE(o.fc), o.fl == null ? 'na' : ''); }
     celda(tr, o.ll == null ? '—' : fN(o.ll), 'sep' + (o.ll == null ? ' na' : '')); celda(tr, o.ll == null ? '—' : fE(o.lc), o.ll == null ? 'na' : '');
-    tb.append(tr);
+    if (W.length) { celda(tr, o.w == null ? '—' : fN(o.w), 'sep' + (o.w == null ? ' na' : '')); celda(tr, fE(o.wc), o.wc == null ? 'na' : ''); }
+    tb.append(tr); if (o.w) T.w += o.w;
     T.g += o.g; if (o.t === 'l') { T.lg += o.g; T.ll += o.l; } else { T.fg += o.g; T.fl += o.f; }
   });
-  if (!rows.length) { const tr = el('tr'); const td = celda(tr, 'Sin conjuntos con datos en el periodo.', 'na'); td.colSpan = S.form ? 7 : 5; tb.append(tr); return; }
+  if (!rows.length) { const tr = el('tr'); const td = celda(tr, 'Sin conjuntos con datos en el periodo.', 'na'); td.colSpan = [...document.querySelectorAll('#t-conj thead th')].filter((t) => !t.hidden).length; tb.append(tr); return; }
   const tr = el('tr', 'tot'); celda(tr, `Total (${rows.length} conjuntos)`); celda(tr, ''); celda(tr, fE(T.g));
-  if (S.form) { celda(tr, fN(T.fl), 'sep'); celda(tr, fE(div(T.fg, T.fl))); } celda(tr, fN(T.ll), 'sep'); celda(tr, fE(div(T.lg, T.ll))); tb.append(tr);
+  if (S.form) { celda(tr, fN(T.fl), 'sep'); celda(tr, fE(div(T.fg, T.fl))); } celda(tr, fN(T.ll), 'sep'); celda(tr, fE(div(T.lg, T.ll)));
+  if (W.length) { celda(tr, FW ? fN(T.w) : '—', 'sep'); celda(tr, FW ? fE(div(T.g, T.w)) : '—'); }
+  tb.append(tr);
 }
 
 function creas() {
@@ -504,6 +523,7 @@ function creas() {
     let o = agg.get(r.a); if (!o) { const ad = ADS[r.a], c = CONJ[ad[1]]; agg.set(r.a, (o = { n: ad[0], conj: c[0], t: c[2], img: https(ad[2]), link: https(ad[3]), id: ad[4] || '', g: 0, f: 0, l: 0 })); }
     o.g += r.g; o.f += r.f; o.l += r.l;
   });
+  const FA = firmadosPor('ai', S.ini, S.fin, S.pais);
   ['f', 'l'].filter((t) => S.form || t !== 'f').forEach((t) => {
     const box = document.querySelector(`[data-cl=${t}]`); box.replaceChildren();
     const todos = [...agg.values()].filter((o) => o.t === t && o.g > 0).map((o) => ({ ...o, n_: o[t] }));
@@ -522,7 +542,8 @@ function creas() {
       if (o.link) { const a = el('a', null, 'Ver anuncio'); a.href = o.link; a.target = '_blank'; a.rel = 'noopener'; cp.append(' · ', a); }
       r.append(tx);
       const mt = el('div', 'mt'), cpl = o.g / o.n_;
-      [['Inversión', eur.format(o.g)], ['Leads', fN(o.n_)], ['CPL', fE(cpl), media && cpl < media ? 'good' : '']].forEach(([l, v, c]) => { const d = el('div'); d.append(el('small', null, l), el('b', c || null, v)); mt.append(d); });
+      const fw = FA ? FA.get(String(o.id)) || 0 : null;
+      [['Inversión', eur.format(o.g)], ['Leads', fN(o.n_)], ['CPL', fE(cpl), media && cpl < media ? 'good' : '']].concat(W.length ? [['Firmados', fw == null ? '—' : fN(fw)], ['CAC', fE(fw ? o.g / fw : null)]] : []).forEach(([l, v, c]) => { const d = el('div'); d.append(el('small', null, l), el('b', c || null, v)); mt.append(d); });
       r.append(mt); box.append(r);
     });
   });
