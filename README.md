@@ -26,17 +26,20 @@ Fechas como número de días desde `D0.desde` (`'2026-06-01'` = 0). Importes en 
 | `actualizado` | Fecha ISO de la última actualización |
 | `hoy` | Día de hoy (Europe/Madrid), `AAAA-MM-DD` |
 | `desde` | Primer día con datos |
-| `paises` | `['ES','PT','FR']` (el resto llega como `'OT'`) |
+| `paises` | `['ES','PT','FR','DE']` (el resto llega como `'OT'`) |
 | `avisos` | Lista de textos si algo no se ha podido descargar |
 | `conj` | Conjuntos de anuncios de Meta: `[nombre, campaña, tipo, idCampaña, idConjunto]`. `tipo`: `'f'` = lead form (cuenta clientes potenciales), `'l'` = lead landing (cuenta contactos) |
 | `ads` | Anuncios de Meta: `[nombre, índice en conj, url imagen, url anuncio, idAnuncio]` |
 | `m` | Meta por día, conjunto y país: `[día, índice conj, país, inversión, leads form, leads landing]` |
 | `a` | Meta por día, anuncio y país: `[día, índice ads, país, inversión, leads form, leads landing]` |
 | `gc` | Nombres de campañas de Google Ads |
+| `gci` | IDs de campañas de Google Ads (texto), misma posición que `gc`. Se cruzan con `campaign_id` de `w` en los leads de Google (`fuente = 'g'`) |
 | `g` | Google Ads por día, campaña y país: `[día, índice gc, país, inversión, conversiones, impresiones, clics]` |
 | `w` | Leads del CRM (Metabase, base `paidleads`) agrupados: `[día lead, día firma o null, país, fuente, nº leads, idCampaña, idConjunto, idAnuncio]`. `día firma` = primer paso a WON (solo deals que siguen en WON); `null` = no ha firmado. `fuente`: `'f'` Meta lead form, `'l'` Meta lead landing, `'m'` Meta sin clasificar, `'g'` Google, `'o'` otros. Los IDs son de Meta (`null` en Google, otros o si el lead no los trae). Opcional: sin `w` no se muestran firmados ni CAC |
 
 Reglas de firmados y CAC: para un periodo A–B, firmados = leads con día lead **y** día firma entre A y B. CAC = inversión ÷ firmados (blended, Meta, lead form, lead landing y Google). Los `'m'` cuentan en el CAC Meta y blended, no en form ni landing; los `'o'` no cuentan (su inversión no está en `D0`). Antes del primer día de `w` el CAC sale «—».
+
+País de los firmados: si el lead trae ID de conjunto (Meta) o de campaña (Google) y el nombre de ese conjunto/campaña lleva país, se usa ese país (el mismo con el que se reparte la inversión); si no, el `pais` del CRM. Por conjunto, creatividad y campaña de Google, los firmados se cruzan por ID; los que no tienen ID cuentan en el CAC de su plataforma pero no en ninguna fila.
 
 Reglas de leads (Meta): los conjuntos «Lead Landing» cuentan solo **contactos**; los «Lead Ads» / «Formulario Meta» solo **clientes potenciales**. Atribución 7 días clic + 1 día visualización.
 
